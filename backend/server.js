@@ -9,7 +9,12 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors());
+// Middleware
+app.use(cors({
+    origin: '*', // Allow all origins for now to fix the issue
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'x-auth-token']
+}));
 app.use(express.json());
 
 // MongoDB Connection Function
