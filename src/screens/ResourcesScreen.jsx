@@ -157,11 +157,11 @@ const ResourcesScreen = () => {
                                             disabled={generating === topic.title}
                                             onClick={() => handleGeneratePDF(topic.title)}
                                             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 ${generating === topic.title
-                                                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                                                    : 'bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white'
+                                                ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                                                : 'bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white'
                                                 }`}
                                         >
-                                            {generating === topic.topicTitle ? (
+                                            {generating === topic.title ? (
                                                 <Loader2 size={14} className="animate-spin" />
                                             ) : (
                                                 <Download size={14} />

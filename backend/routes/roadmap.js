@@ -280,7 +280,6 @@ router.post('/topic-docs', auth, async (req, res) => {
             })
         });
 
-        const data = await res.json(); // Wait, I need to name the response data differently or use it from Groq
         const groqData = await response.json();
 
         if (response.ok) {
