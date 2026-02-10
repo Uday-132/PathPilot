@@ -58,6 +58,10 @@ const UserSchema = new mongoose.Schema({
     achievements: {
         type: [String], // Array of achievement IDs or titles
         default: []
+    },
+    avatar: {
+        type: String, // Base64 or URL
+        default: null
     }
 });
 

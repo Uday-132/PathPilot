@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useApp } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -7,8 +7,9 @@ import {
 } from 'lucide-react';
 
 const ProfileScreen = () => {
-    const { userGoal, roadmap, completedMilestones, setUserGoal, setRoadmap, logout, resetRoadmap } = useApp();
+    const { user, userGoal, roadmap, completedMilestones, setUserGoal, setRoadmap, logout, resetRoadmap, updateProfile } = useApp();
     const navigate = useNavigate();
+    const fileInputRef = useRef(null);
 
     // Mock calculation
     const total = roadmap?.months?.length * 4 || 24;
@@ -24,8 +25,65 @@ const ProfileScreen = () => {
         }
     };
 
+    const handleImageClick = () => {
+        fileInputRef.current.click();
+    };
+
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            // Check file size (e.g., if > 2MB, definitely compress more)
+            const reader = new FileReader();
+            reader.onloadend = async () => {
+                const img = new Image();
+                img.src = reader.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 400; // Profile pic doesn't need to be huge
+                    const MAX_HEIGHT = 400;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Compress to JPEG with 0.7 quality
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                    console.log('Original size:', reader.result.length);
+                    console.log('Compressed size:', compressedBase64.length);
+
+                    updateProfile({ avatar: compressedBase64 });
+                };
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     return (
         <div className="flex flex-col h-full bg-[#FAFBFF] font-sans">
+
+            {/* Hidden File Input */}
+            <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                className="hidden"
+                accept="image/*"
+            />
 
             {/* Header */}
             <div className="p-6 pb-2 flex items-center justify-between sticky top-0 bg-[#FAFBFF] z-10">
@@ -44,19 +102,29 @@ const ProfileScreen = () => {
                 <div className="flex flex-col items-center mb-8 mt-2">
                     <div className="relative mb-4">
                         <div className="w-28 h-28 rounded-full bg-slate-200 border-4 border-white shadow-lg overflow-hidden">
-                            {/* Placeholder Avatar - using DiceBear for dynamic avatar */}
-                            <img
-                                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=Alex`}
-                                alt="Avatar"
-                                className="w-full h-full object-cover"
-                            />
+                            {user?.avatar ? (
+                                <img
+                                    src={user.avatar}
+                                    alt="Avatar"
+                                    className="w-full h-full object-cover"
+                                />
+                            ) : (
+                                <img
+                                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || 'Explorer'}`}
+                                    alt="Avatar"
+                                    className="w-full h-full object-cover"
+                                />
+                            )}
                         </div>
-                        <button className="absolute bottom-1 right-1 bg-blue-500 p-2 rounded-full border-2 border-white shadow-md text-white hover:bg-blue-600 transition-colors">
+                        <button
+                            onClick={handleImageClick}
+                            className="absolute bottom-1 right-1 bg-blue-500 p-2 rounded-full border-2 border-white shadow-md text-white hover:bg-blue-600 transition-colors"
+                        >
                             <Edit2 size={14} />
                         </button>
                     </div>
-                    <h2 className="text-2xl font-bold text-slate-900 mb-0.5">Alex Rivera</h2>
-                    <p className="text-blue-500 font-medium">Aspiring {userGoal.role || "Data Scientist"}</p>
+                    <h2 className="text-2xl font-bold text-slate-900 mb-0.5">{user?.name || "User Name"}</h2>
+                    <p className="text-blue-500 font-medium">{userGoal.careerGoal || "Aspiring Explorer"}</p>
                 </div>
 
                 {/* Overall Progress Card */}

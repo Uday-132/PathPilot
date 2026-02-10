@@ -33,7 +33,7 @@ router.post('/signup', async (req, res) => {
 
         jwt.sign(payload, process.env.JWT_SECRET || 'secret', { expiresIn: 360000 }, (err, token) => {
             if (err) throw err;
-            res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
+            res.json({ token, user: { id: user.id, name: user.name, email: user.email, avatar: user.avatar } });
         });
 
     } catch (err) {
@@ -102,7 +102,8 @@ router.post('/login', async (req, res) => {
                     name: user.name,
                     email: user.email,
                     streak: user.streak,
-                    achievements: user.achievements
+                    achievements: user.achievements,
+                    avatar: user.avatar
                 }
             });
         });
@@ -113,13 +114,24 @@ router.post('/login', async (req, res) => {
     }
 });
 
+// Get current user
+router.get('/', require('../middleware/auth'), async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select('-password');
+        res.json(user);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 // Update User Profile (Goals)
 router.put('/profile', require('../middleware/auth'), async (req, res) => {
     console.log('PUT /profile hit'); // Debug
     console.log('Headers:', req.headers['x-auth-token']); // Debug - check token
     console.log('Body:', req.body); // Debug - check data
 
-    const { careerGoal, skillLevel, targetOutcome, availability } = req.body;
+    const { careerGoal, skillLevel, targetOutcome, availability, avatar } = req.body;
 
     // Build profile object
     const profileFields = {};
@@ -127,6 +139,7 @@ router.put('/profile', require('../middleware/auth'), async (req, res) => {
     if (skillLevel) profileFields.skillLevel = skillLevel;
     if (targetOutcome) profileFields.targetOutcome = targetOutcome;
     if (availability) profileFields.availability = availability;
+    if (avatar) profileFields.avatar = avatar;
 
     console.log('Profile Fields to Update:', profileFields); // Debug
 

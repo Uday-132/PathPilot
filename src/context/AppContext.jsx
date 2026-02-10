@@ -36,9 +36,38 @@ export const AppProvider = ({ children }) => {
         }
     };
 
+    const loadUser = async (authToken = token) => {
+        if (!authToken) return;
+        try {
+            const res = await fetch('https://path-pilot-sand.vercel.app/api/auth', {
+                method: 'GET',
+                headers: {
+                    'x-auth-token': authToken
+                }
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setUser(data);
+                // Sync userGoal with what's in the DB if available
+                if (data.careerGoal) {
+                    setUserGoal(prev => ({
+                        ...prev,
+                        careerGoal: data.careerGoal,
+                        skillLevel: data.skillLevel || prev.skillLevel,
+                        targetOutcome: data.targetOutcome || prev.targetOutcome,
+                        availability: data.availability || prev.availability
+                    }));
+                }
+            }
+        } catch (err) {
+            console.error("Failed to load user:", err);
+        }
+    };
+
     // Auto-fetch on mount if token exists
     useEffect(() => {
         if (token) {
+            loadUser(token);
             fetchUserRoadmap(token);
         }
     }, [token]);
