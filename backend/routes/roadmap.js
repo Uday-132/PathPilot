@@ -257,12 +257,13 @@ router.post('/topic-docs', auth, async (req, res) => {
             1. Executive Summary
             2. Foundational Concepts (Core definitions, history, importance)
             3. Deep Dive (Architecture, how it works, technical internals)
-            4. Real-world Applications (Use cases, industry examples)
-            5. Best Practices & Optimization (Performance tips, security, common pitfalls)
-            6. Future Trends (Where the technology is heading)
-            7. Comprehensive FAQ (Addressing 10 common learner questions)
+            4. Code Implementation & Examples (Provide functional, well-commented code snippets showing real-world usage)
+            5. Real-world Applications (Use cases, industry examples)
+            6. Best Practices & Optimization (Performance tips, security, common pitfalls)
+            7. Future Trends (Where the technology is heading)
+            8. Comprehensive FAQ (Addressing 10 common learner questions)
             
-            Write at least 2500 words. Use clear headings, bullet points, and professional formatting. 
+            Write at least 3000 words. Include multiple detailed code blocks. Use clear headings, bullet points, and professional formatting. 
             Do NOT include conversational filler, start directly with the title.
         `;
 

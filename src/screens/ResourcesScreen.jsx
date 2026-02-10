@@ -71,6 +71,18 @@ const ResourcesScreen = () => {
                         doc.addPage();
                         cursorY = 20;
                     }
+
+                    // Simple code block detection (lines starting with spaces or containing special chars common in code)
+                    const looksLikeCode = line.startsWith('    ') || line.includes('=>') || line.includes('{') || line.includes(';');
+
+                    if (looksLikeCode) {
+                        doc.setFont("courier", "normal");
+                        doc.setTextColor(59, 130, 246); // Blue-500 for code
+                    } else {
+                        doc.setFont("helvetica", "normal");
+                        doc.setTextColor(30, 41, 59);
+                    }
+
                     doc.text(line, margin, cursorY);
                     cursorY += 7;
                 });
