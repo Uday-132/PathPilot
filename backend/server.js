@@ -31,6 +31,16 @@ connectDB();
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/roadmap', require('./routes/roadmap'));
 
+// Root Route for Vercel Check
+app.get('/', (req, res) => {
+    res.send('PathPilot API is running...');
+});
+
 const PORT = process.env.PORT || 5001;
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT} with updated routes!`));
+// Only listen if not running on Vercel (exported)
+if (require.main === module) {
+    app.listen(PORT, () => console.log(`Server running on port ${PORT} with updated routes!`));
+}
+
+module.exports = app;
