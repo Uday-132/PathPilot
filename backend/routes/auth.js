@@ -57,6 +57,36 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ msg: 'Invalid Credentials' });
         }
 
+        // Streak Logic
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+        let lastLoginDate = null;
+        if (user.lastLogin) {
+            const last = new Date(user.lastLogin);
+            lastLoginDate = new Date(last.getFullYear(), last.getMonth(), last.getDate());
+        }
+
+        if (!lastLoginDate) {
+            // First time login ever (or since update)
+            user.streak = 1;
+        } else {
+            const diffTime = Math.abs(today - lastLoginDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 1) {
+                // Logged in yesterday -> Increment streak
+                user.streak += 1;
+            } else if (diffDays > 1) {
+                // Missed a day -> Reset streak
+                user.streak = 1;
+            }
+            // If diffDays === 0 (logged in earlier today), keep streak same
+        }
+
+        user.lastLogin = now;
+        await user.save();
+
         const payload = {
             user: {
                 id: user.id
@@ -65,7 +95,16 @@ router.post('/login', async (req, res) => {
 
         jwt.sign(payload, process.env.JWT_SECRET || 'secret', { expiresIn: 360000 }, (err, token) => {
             if (err) throw err;
-            res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
+            res.json({
+                token,
+                user: {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    streak: user.streak,
+                    achievements: user.achievements
+                }
+            });
         });
 
     } catch (err) {

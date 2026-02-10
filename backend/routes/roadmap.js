@@ -231,4 +231,17 @@ router.put('/:roadmapId/topic/:topicId', auth, async (req, res) => {
     }
 });
 
+// Reset Roadmap (Delete all roadmaps for user)
+router.delete('/', auth, async (req, res) => {
+    try {
+        await Roadmap.deleteMany({ user: req.user.id });
+        // Optionally reset user goal/skills/achievements if requested, 
+        // but for now just clearing the roadmap allows a fresh start.
+        res.json({ msg: 'Roadmap reset successful' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 module.exports = router;

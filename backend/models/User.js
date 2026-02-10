@@ -46,6 +46,18 @@ const UserSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    streak: {
+        type: Number,
+        default: 0
+    },
+    lastLogin: {
+        type: Date,
+        default: null
+    },
+    achievements: {
+        type: [String], // Array of achievement IDs or titles
+        default: []
     }
 });
 

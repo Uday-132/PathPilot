@@ -7,20 +7,20 @@ import {
 } from 'lucide-react';
 
 const ProfileScreen = () => {
-    const { userGoal, roadmap, completedMilestones, setUserGoal, setRoadmap, logout } = useApp();
+    const { userGoal, roadmap, completedMilestones, setUserGoal, setRoadmap, logout, resetRoadmap } = useApp();
     const navigate = useNavigate();
 
     // Mock calculation
-    const total = roadmap?.months.length * 4 || 24;
+    const total = roadmap?.months?.length * 4 || 24;
     const completed = completedMilestones?.length || 0;
     const percentage = Math.round((completed / total) * 100);
 
-    const handleReset = () => {
-        if (window.confirm("Are you sure you want to reset your roadmap?")) {
-            setUserGoal({ ...userGoal, role: '' });
-            setRoadmap(null);
-            // Clear completed milestones logic would go here ideally
-            navigate('/welcome');
+    const handleReset = async () => {
+        if (window.confirm("Are you sure you want to reset your roadmap? This action cannot be undone.")) {
+            const success = await resetRoadmap();
+            if (success) {
+                navigate('/goal');
+            }
         }
     };
 

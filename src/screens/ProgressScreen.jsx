@@ -144,9 +144,9 @@ const ProgressScreen = () => {
                     <div className="flex justify-between items-center mb-6 relative z-10">
                         <div className="flex items-center gap-2">
                             <Flame size={24} className="text-orange-300" fill="currentColor" />
-                            <h3 className="text-lg font-bold">7-Day Streak</h3>
+                            <h3 className="text-lg font-bold">{user?.streak || 1}-Day Streak</h3>
                         </div>
-                        <span className="bg-white/20 px-3 py-1 rounded-full text-xs font-bold backdrop-blur-sm border border-white/10">AMAZING!</span>
+                        <span className="bg-white/20 px-3 py-1 rounded-full text-xs font-bold backdrop-blur-sm border border-white/10">KEEP GOING!</span>
                     </div>
 
                     {/* Days Row */}
@@ -162,13 +162,13 @@ const ProgressScreen = () => {
                         <div className="flex flex-col items-center gap-2">
                             <span className="text-[10px] font-bold">S</span>
                             <div className="w-8 h-8 rounded-full bg-white text-blue-600 font-bold text-sm flex items-center justify-center shadow-md scale-110">
-                                6
+                                {user?.streak || 1}
                             </div>
                         </div>
                         <div className="flex flex-col items-center gap-2 opacity-50">
                             <span className="text-[10px] font-medium">S</span>
                             <div className="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center text-xs">
-                                7
+                                {(user?.streak || 1) + 1}
                             </div>
                         </div>
                     </div>
@@ -185,9 +185,25 @@ const ProgressScreen = () => {
                         <span className="text-xs font-bold text-blue-500">See all</span>
                     </div>
                     <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-                        <AchievementCard icon={Zap} color="text-yellow-500" bg="bg-yellow-50" title="Fast Learner" />
-                        <AchievementCard icon={Award} color="text-green-500" bg="bg-green-50" title="Week 1 Hero" />
-                        <AchievementCard icon={Users} color="text-purple-500" bg="bg-purple-50" title="Networking Pro" />
+                        {user?.achievements && user.achievements.length > 0 ? (
+                            user.achievements.map((ach, index) => (
+                                <AchievementCard
+                                    key={index}
+                                    icon={Award} // Default icon for now, ideally mapped
+                                    color="text-blue-500"
+                                    bg="bg-blue-50"
+                                    title={ach}
+                                />
+                            ))
+                        ) : (
+                            <div className="text-sm text-slate-400 italic w-full text-center py-4 bg-slate-50 rounded-xl">
+                                Complete topics to earn badges!
+                            </div>
+                        )}
+                        {/* Always show one "Next" or "Locked" achievement for motivation if list is empty or short */}
+                        {!user?.achievements?.length && (
+                            <AchievementCard icon={Zap} color="text-yellow-500" bg="bg-yellow-50" title="First Step" />
+                        )}
                     </div>
                 </div>
 

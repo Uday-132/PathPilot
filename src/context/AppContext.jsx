@@ -58,6 +58,34 @@ export const AppProvider = ({ children }) => {
         localStorage.removeItem('token');
     };
 
+    const resetRoadmap = async () => {
+        try {
+            const res = await fetch('https://path-pilot-sand.vercel.app/api/roadmap', {
+                method: 'DELETE',
+                headers: {
+                    'x-auth-token': token
+                }
+            });
+
+            if (res.ok) {
+                setRoadmap(null);
+                setCompletedMilestones([]);
+                // Optionally reset user goal
+                setUserGoal({
+                    careerGoal: '',
+                    skillLevel: 'Beginner',
+                    targetOutcome: 'Job ready',
+                    availability: '10',
+                });
+                return true;
+            }
+        } catch (err) {
+            console.error("Reset Failed:", err);
+            return false;
+        }
+        return false;
+    };
+
     const toggleMilestone = (id) => {
         setCompletedMilestones(prev =>
             prev.includes(id)
@@ -169,7 +197,8 @@ export const AppProvider = ({ children }) => {
             userGoal, setUserGoal,
             roadmap, setRoadmap, fetchUserRoadmap,
             completedMilestones, toggleMilestone, toggleTopicCompletion,
-            user, token, login, logout, updateProfile, generateUserRoadmap
+            user, token, login, logout, updateProfile, generateUserRoadmap,
+            resetRoadmap
         }}>
             {children}
         </AppContext.Provider>
