@@ -244,4 +244,54 @@ router.delete('/', auth, async (req, res) => {
     }
 });
 
+// Generate Comprehensive Topic Documentation (for PDF)
+router.post('/topic-docs', auth, async (req, res) => {
+    const { topic } = req.body;
+    if (!topic) return res.status(400).json({ msg: 'Topic is required' });
+
+    try {
+        const prompt = `
+            You are a senior technical writer. Create a comprehensive, 10-page equivalent study guide for the topic: "${topic}".
+            
+            Structure the content with:
+            1. Executive Summary
+            2. Foundational Concepts (Core definitions, history, importance)
+            3. Deep Dive (Architecture, how it works, technical internals)
+            4. Real-world Applications (Use cases, industry examples)
+            5. Best Practices & Optimization (Performance tips, security, common pitfalls)
+            6. Future Trends (Where the technology is heading)
+            7. Comprehensive FAQ (Addressing 10 common learner questions)
+            
+            Write at least 2500 words. Use clear headings, bullet points, and professional formatting. 
+            Do NOT include conversational filler, start directly with the title.
+        `;
+
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                model: "llama-3.3-70b-versatile",
+                messages: [{ role: "user", content: prompt }],
+                temperature: 0.7,
+                max_tokens: 4096 // Get as much as we can in one go
+            })
+        });
+
+        const data = await res.json(); // Wait, I need to name the response data differently or use it from Groq
+        const groqData = await response.json();
+
+        if (response.ok) {
+            res.json({ content: groqData.choices[0].message.content });
+        } else {
+            res.status(500).json({ msg: 'Failed to generate documentation' });
+        }
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 module.exports = router;
