@@ -11,10 +11,21 @@ const ProfileScreen = () => {
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
 
-    // Mock calculation
-    const total = roadmap?.months?.length * 4 || 24;
-    const completed = completedMilestones?.length || 0;
-    const percentage = Math.round((completed / total) * 100);
+    // Dynamic Progress Calculation
+    let totalTopics = 0;
+    let completedTopicsCount = 0;
+
+    if (roadmap && roadmap.months) {
+        roadmap.months.forEach(month => {
+            if (month.topics) {
+                totalTopics += month.topics.length;
+                completedTopicsCount += month.topics.filter(t => t.completed).length;
+            }
+        });
+    }
+
+    const percentage = totalTopics > 0 ? Math.round((completedTopicsCount / totalTopics) * 100) : 0;
+    const currentMonthName = new Date().toLocaleString('default', { month: 'long' });
 
     const handleReset = async () => {
         if (window.confirm("Are you sure you want to reset your roadmap? This action cannot be undone.")) {
@@ -131,7 +142,7 @@ const ProfileScreen = () => {
                 <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-100 mb-8 relative overflow-hidden">
                     <div className="flex justify-between items-center mb-4">
                         <h3 className="font-bold text-lg text-slate-900">Overall Progress</h3>
-                        <span className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide">October</span>
+                        <span className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide">{currentMonthName}</span>
                     </div>
 
                     <div className="flex justify-between items-end mb-2">
@@ -148,7 +159,7 @@ const ProfileScreen = () => {
 
                     <div className="flex items-center gap-2 text-slate-600 text-sm font-medium">
                         <Zap size={16} className="text-blue-500 fill-current" />
-                        <span>You're 5% ahead of your monthly goal!</span>
+                        <span>You've completed {completedTopicsCount} out of {totalTopics} topics!</span>
                     </div>
                 </div>
 
