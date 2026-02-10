@@ -19,7 +19,7 @@ export const AppProvider = ({ children }) => {
     const fetchUserRoadmap = async (authToken = token) => {
         if (!authToken) return;
         try {
-            const res = await fetch('http://localhost:5001/api/roadmap', {
+            const res = await fetch('https://path-pilot-sand.vercel.app/api/roadmap', {
                 method: 'GET',
                 headers: {
                     'x-auth-token': authToken
@@ -69,7 +69,7 @@ export const AppProvider = ({ children }) => {
     const generateUserRoadmap = async () => {
         console.log('Generating Roadmap...');
         try {
-            const res = await fetch('http://localhost:5001/api/roadmap/generate', {
+            const res = await fetch('https://path-pilot-sand.vercel.app/api/roadmap/generate', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -103,7 +103,7 @@ export const AppProvider = ({ children }) => {
     const updateProfile = async (goalData) => {
         console.log('Sending Profile Update:', goalData); // Debug
         try {
-            const res = await fetch('http://localhost:5001/api/auth/profile', {
+            const res = await fetch('https://path-pilot-sand.vercel.app/api/auth/profile', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -143,7 +143,7 @@ export const AppProvider = ({ children }) => {
         }
 
         try {
-            const res = await fetch(`http://localhost:5001/api/roadmap/${roadmapId}/topic/${topicId}`, {
+            const res = await fetch(`https://path-pilot-sand.vercel.app/api/roadmap/${roadmapId}/topic/${topicId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

@@ -32,7 +32,7 @@ const AuthScreen = () => {
             const endpoint = isLogin ? '/api/auth/login' : '/api/auth/signup';
             // In development, we need to point to the backend port if not proxied
             // Assuming backend is on 5000 and frontend on 5173
-            const url = `http://localhost:5000${endpoint}`;
+            const url = `https://path-pilot-sand.vercel.app${endpoint}`;
 
             const body = isLogin ? { email, password } : { name, email, password };
 

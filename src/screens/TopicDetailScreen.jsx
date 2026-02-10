@@ -19,7 +19,7 @@ const TopicDetailScreen = () => {
     useEffect(() => {
         const fetchDetails = async () => {
             try {
-                const res = await fetch('http://localhost:5001/api/roadmap/topic', {
+                const res = await fetch('https://path-pilot-sand.vercel.app/api/roadmap/topic', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
